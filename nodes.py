@@ -24,7 +24,8 @@ from einops import rearrange
 from comfy import model_management as mm
 from comfy.utils import ProgressBar, common_upscale
 from comfy.clip_vision import clip_preprocess, ClipVisionModel
-from comfy.cli_args import args, LatentPreviewMethod
+# from comfy.cli_args import args, LatentPreviewMethod
+from comfy.cli_args import args
 import folder_paths
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -2610,11 +2611,13 @@ class WanVideoSampler:
 
                 return noise_pred, [cache_state_cond, cache_state_uncond]
 
-        if args.preview_method in [LatentPreviewMethod.Auto, LatentPreviewMethod.Latent2RGB]: #default for latent2rgb
-            from latent_preview import prepare_callback
-        else:
-            from .latent_preview import prepare_callback #custom for tiny VAE previews
-        callback = prepare_callback(patcher, len(timesteps))
+        # if args.preview_method in [LatentPreviewMethod.Auto, LatentPreviewMethod.Latent2RGB]: #default for latent2rgb
+        #     from latent_preview import prepare_callback
+        # else:
+        #     from .latent_preview import prepare_callback #custom for tiny VAE previews
+        # callback = prepare_callback(patcher, len(timesteps))
+
+        callback = None
 
         if not multitalk_sampling:
             log.info(f"Input sequence length: {seq_len}")
@@ -3058,7 +3061,8 @@ class WanVideoSampler:
 
                         estimated_iterations = total_frames // (frame_num - motion_frame) + 1
                         loop_pbar = tqdm(total=estimated_iterations, desc="Total progress", position=1, leave=True)
-                        callback = prepare_callback(patcher, estimated_iterations)
+                        # callback = prepare_callback(patcher, estimated_iterations)
+                        callback = None
 
                         audio_embedding = multitalk_audio_embedding
                         human_num = len(audio_embedding)
