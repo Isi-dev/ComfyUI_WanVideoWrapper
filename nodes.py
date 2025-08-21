@@ -3178,6 +3178,8 @@ class WanVideoSampler:
 
                             # zero padding and vae encode
                             if cond_image is not None:
+                                if cond_image.shape[2] > frame_num:
+                                    cond_image = cond_image[:, :, :frame_num]
                                 video_frames = torch.zeros(1, 3, frame_num-cond_image.shape[2], target_h, target_w, device=device, dtype=vae.dtype)
                                 padding_frames_pixels_values = torch.concat([cond_image.to(device, vae.dtype), video_frames], dim=2)
 
