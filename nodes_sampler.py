@@ -22,7 +22,7 @@ from einops import rearrange
 from comfy import model_management as mm
 from comfy.utils import ProgressBar, load_torch_file
 from comfy.clip_vision import clip_preprocess, ClipVisionModel
-from comfy.cli_args import args, LatentPreviewMethod
+from comfy.cli_args import args
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -1539,11 +1539,12 @@ class WanVideoSampler:
 
                 return noise_pred, noise_pred_ovi, [cache_state_cond, cache_state_uncond]
 
-        if args.preview_method in [LatentPreviewMethod.Auto, LatentPreviewMethod.Latent2RGB]: #default for latent2rgb
-            from latent_preview import prepare_callback
-        else:
-            from .latent_preview import prepare_callback #custom for tiny VAE previews
-        callback = prepare_callback(patcher, len(timesteps))
+        # if args.preview_method in [LatentPreviewMethod.Auto, LatentPreviewMethod.Latent2RGB]: #default for latent2rgb
+        #     from latent_preview import prepare_callback
+        # else:
+        #     from .latent_preview import prepare_callback #custom for tiny VAE previews
+        # callback = prepare_callback(patcher, len(timesteps))
+        callback = None
 
         if not multitalk_sampling and not framepack and not wananimate_loop:
             log.info(f"Input sequence length: {seq_len}")
@@ -2066,7 +2067,8 @@ class WanVideoSampler:
 
                         total_frames = len(audio_embedding[0])
                         estimated_iterations = total_frames // (frame_num - motion_frame) + 1
-                        callback = prepare_callback(patcher, estimated_iterations)
+                        # callback = prepare_callback(patcher, estimated_iterations)
+                        callback = None
 
                         if frame_num >= total_frames:
                             arrive_last_frame = True
@@ -2621,7 +2623,8 @@ class WanVideoSampler:
                         end_latent = latent_window_size
 
 
-                        callback = prepare_callback(patcher, estimated_iterations)
+                        # callback = prepare_callback(patcher, estimated_iterations)
+                        callback = None
                         log.info(f"Sampling {total_frames} frames in {estimated_iterations} windows, at {latent.shape[3]*vae_upscale_factor}x{latent.shape[2]*vae_upscale_factor} with {steps} steps")
 
                         # outer WanAnimate loop
